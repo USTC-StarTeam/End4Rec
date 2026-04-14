@@ -32,3 +32,90 @@ End4Rec/
 ├── contrastive_loss.py   # 对比学习损失
 ├── data.py / dataset.py  # 数据读取与构建
 └── evaluation.py         # HR / NDCG 评估
+```
+
+## 3. 环境准备
+
+建议环境：
+
+- Python 3.9+
+- MindSpore（建议与本机 CUDA/Ascend 环境匹配）
+
+快速检查：
+
+```bash
+cd End4Rec
+python -c "import mindspore; print(mindspore.__version__)"
+```
+
+## 4. 数据格式
+
+训练 CSV 需包含以下字段：
+
+- `item_ids`：逗号分隔的 item 序列
+- `behavior_ids`：逗号分隔的行为类型序列
+- `positions`：位置序列
+- `label`：目标 item
+
+示例：
+
+```csv
+item_ids,behavior_ids,positions,label
+10,11,23,42
+```
+
+> 注：实际训练中 `item_ids/behavior_ids/positions` 应为等长序列（如 `10,11,23,...`）。
+
+## 5. 快速开始
+
+### 5.1 默认配置（快速跑通）
+
+```bash
+cd End4Rec
+python run.py
+```
+
+若未提供数据文件，代码会自动回退到 dummy 数据生成器以完成完整训练流程。
+
+### 5.2 使用自定义配置
+
+```bash
+cd End4Rec
+python run.py --config config.json
+```
+
+`config.json` 可覆盖的常用参数包括：
+
+- 模型参数：`num_items`、`num_behaviors`、`seq_length`、`d_model`、`num_blocks`、`epsilon`
+- 训练参数：`batch_size`、`stage1~4_epochs`、`learning_rate_stage1~4`
+- 损失权重：`reg_weight`、`contrast_weight`
+- 数据参数：`train_data_file`、`eval_data_file`、`num_dummy_samples`
+- 评估参数：`topk`
+
+## 6. 训练流程（4 Stages）
+
+当前实现对应四阶段训练：
+
+1. `embedding + ebm`
+2. `hard_noise`
+3. `soft_noise`
+4. 全模块联合微调（含 `output_layer`）
+
+## 7. 评估与产物
+
+- 若提供 `eval_data_file`，训练后会输出 `HR@K` 与 `NDCG@K`；
+- 默认在训练结束后保存模型为：`End4Rec/end4rec_final.ckpt`。
+
+## 8. 引用
+
+如果你的工作使用了本仓库，请引用原论文：
+
+```bibtex
+@inproceedings{han2024efficient,
+  title={Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation},
+  author={Han, Yongqiang and Wang, Hao and Wang, Kefan and Wu, Likang and Li, Zhi and Guo, Wei and Liu, Yong and Lian, Defu and Chen, Enhong},
+  booktitle={Proceedings of the ACM Web Conference 2024 (WWW '24)},
+  year={2024},
+  doi={10.1145/3589334.3645380}
+}
+```
