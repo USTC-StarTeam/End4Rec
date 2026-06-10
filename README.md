@@ -114,6 +114,16 @@ Common config fields include `num_items`, `num_behaviors`, `seq_length`, `d_mode
 
 The paper reports that END4Rec improves both efficiency and robustness for multi-behavior sequential recommendation by mining behavior patterns efficiently and decoupling different noise types.
 
+| Dataset | END4Rec HR@10 / NDCG@10 | END4Rec HR@20 / NDCG@20 | Relative gain over strongest baseline |
+| --- | --- | --- | --- |
+| CIKM | 0.4787 / 0.2754 | 0.6120 / 0.3536 | +8.02% HR@10, +8.23% NDCG@10, +7.44% HR@20, +7.00% NDCG@20 |
+| Taobao | 0.4464 / 0.2533 | 0.5614 / 0.3102 | +5.75% HR@10, +4.71% NDCG@10, +5.63% HR@20, +5.27% NDCG@20 |
+| IJCAI | 0.4821 / 0.2613 | 0.6166 / 0.3314 | +6.38% HR@10, +6.88% NDCG@10, +6.88% HR@20, +7.53% NDCG@20 |
+
+The complexity comparison reports that END4Rec's Efficient Behavior Miner keeps adequate feature fusion while avoiding the quadratic sequence cost of self-attention.
+
+**Conclusion:** the improvements come from both the EBM architecture and the hard/soft noise decoupling strategy, not only from adding a larger sequential backbone.
+
 ## 11. Notes For Maintainers
 
 - Keep the top-level README encoded as UTF-8.

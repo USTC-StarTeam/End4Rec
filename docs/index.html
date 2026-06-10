@@ -180,6 +180,37 @@ python run.py --config config.json</code></pre>
 <p>Common config fields include <code>num_items</code>, <code>num_behaviors</code>, <code>seq_length</code>, <code>d_model</code>, <code>num_blocks</code>, <code>epsilon</code>, <code>batch_size</code>, <code>stage1~4_epochs</code>, <code>learning_rate_stage1~4</code>, <code>reg_weight</code>, <code>contrast_weight</code>, <code>train_data_file</code>, <code>eval_data_file</code>, <code>num_dummy_samples</code>, and <code>topk</code>.</p>
 <h2 id="10-experimental-highlights">10. Experimental Highlights</h2>
 <p>The paper reports that END4Rec improves both efficiency and robustness for multi-behavior sequential recommendation by mining behavior patterns efficiently and decoupling different noise types.</p>
+<table>
+<thead><tr>
+<th>Dataset</th>
+<th>END4Rec HR@10 / NDCG@10</th>
+<th>END4Rec HR@20 / NDCG@20</th>
+<th>Relative gain over strongest baseline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CIKM</td>
+<td>0.4787 / 0.2754</td>
+<td>0.6120 / 0.3536</td>
+<td>+8.02% HR@10, +8.23% NDCG@10, +7.44% HR@20, +7.00% NDCG@20</td>
+</tr>
+<tr>
+<td>Taobao</td>
+<td>0.4464 / 0.2533</td>
+<td>0.5614 / 0.3102</td>
+<td>+5.75% HR@10, +4.71% NDCG@10, +5.63% HR@20, +5.27% NDCG@20</td>
+</tr>
+<tr>
+<td>IJCAI</td>
+<td>0.4821 / 0.2613</td>
+<td>0.6166 / 0.3314</td>
+<td>+6.38% HR@10, +6.88% NDCG@10, +6.88% HR@20, +7.53% NDCG@20</td>
+</tr>
+</tbody>
+</table>
+<p>The complexity comparison reports that END4Rec's Efficient Behavior Miner keeps adequate feature fusion while avoiding the quadratic sequence cost of self-attention.</p>
+<p><strong>Conclusion:</strong> the improvements come from both the EBM architecture and the hard/soft noise decoupling strategy, not only from adding a larger sequential backbone.</p>
 <h2 id="11-notes-for-maintainers">11. Notes For Maintainers</h2>
 <ul>
 <li>Keep the top-level README encoded as UTF-8.</li>
