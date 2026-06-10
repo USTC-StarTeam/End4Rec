@@ -112,6 +112,11 @@ Common config fields include `num_items`, `num_behaviors`, `seq_length`, `d_mode
 
 ## 10. Experimental Highlights
 
+![END4Rec overall, complexity, and ablation results](docs/assets/end4rec-results.png)
+
+This experiment-page crop brings together the main HR/NDCG comparison, feature-fusion complexity table, ablation, and hyper-parameter curves used to support the repository summary.
+
+
 The paper reports that END4Rec improves both efficiency and robustness for multi-behavior sequential recommendation by mining behavior patterns efficiently and decoupling different noise types.
 
 | Dataset | END4Rec HR@10 / NDCG@10 | END4Rec HR@20 / NDCG@20 | Relative gain over strongest baseline |
