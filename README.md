@@ -1,121 +1,140 @@
-# END4Rec (MindSpore)
+# END4Rec: Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation
 
-本仓库提供论文 **Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation (WWW 2024)** 的 MindSpore 实现代码。
+[![Project Page](https://img.shields.io/badge/Project-Page-2454d6.svg)](https://ustc-starteam.github.io/End4Rec/)
+[![WWW 2024](https://img.shields.io/badge/WWW-2024-4b6cb7.svg)](https://doi.org/10.1145/3589334.3645380)
+[![arXiv](https://img.shields.io/badge/arXiv-2403.17603-b31b1b.svg)](https://arxiv.org/abs/2403.17603)
+[![MindSpore](https://img.shields.io/badge/MindSpore-Implementation-c63c26.svg)](https://www.mindspore.cn/)
 
-- 论文（arXiv）：https://arxiv.org/abs/2403.17603
-- 论文（ACM DOI）：https://doi.org/10.1145/3589334.3645380
+MindSpore implementation for **"END4Rec: Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation"**.
 
-## 1. 论文简介
+END4Rec targets multi-behavior sequential recommendation, where user sequences can be long and noisy because different behaviors such as clicks, carts, and purchases carry different signals. The method combines efficient behavior sequence mining, hard/soft denoising, and noise-decoupling contrastive learning.
 
-END4Rec 面向**多行为序列推荐**场景，核心目标是同时解决两类问题：
+## 1. Paper
 
-1. 多行为序列变长后建模效率下降；
-2. 多行为数据中的噪声会干扰用户兴趣建模。
+Yongqiang Han, Hao Wang, Kefan Wang, Likang Wu, Zhi Li, Wei Guo, Yong Liu, Defu Lian, and Enhong Chen. **END4Rec: Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation.** In *Proceedings of the ACM Web Conference 2024 (WWW 2024)*, Singapore, 2024.
 
-论文提出三部分关键设计：
+[Paper](https://doi.org/10.1145/3589334.3645380) / [arXiv](https://arxiv.org/abs/2403.17603) / [PDF](https://arxiv.org/pdf/2403.17603) / [Project Page](https://ustc-starteam.github.io/End4Rec/) / [Code](https://github.com/USTC-StarTeam/End4Rec) / [Citation](#citation)
 
-- **EBM (Efficient Behavior Sequence Miner)**：在频域建模行为序列，兼顾效率与表达能力；
-- **行为感知去噪模块**：包含 token 级的硬噪声消除与表征级的软噪声过滤；
-- **Noise-Decoupling Contrastive Learning + 4阶段训练策略**：逐步提升信号/噪声解耦效果。
+The paper addresses two issues in multi-behavior recommendation: long behavior sequences reduce modeling efficiency, and noisy behaviors interfere with user-interest modeling. END4Rec decouples useful behavior signals from noisy signals while keeping sequence mining efficient.
 
-## 2. 代码结构（与实现对应）
+## 2. Highlights
+
+- Introduces **Efficient Behavior Sequence Miner (EBM)** for low-complexity behavior pattern mining.
+- Uses hard noise elimination at the token level and soft noise filtering at the representation level.
+- Adds noise-decoupling contrastive learning and a guided four-stage training strategy.
+- Provides a MindSpore implementation with runnable dummy-data fallback.
+
+## 3. Method At A Glance
+
+![END4Rec framework](docs/assets/method-overview.png)
+
+The framework combines behavior-aware sequence embedding, EBM, hard noise elimination, soft noise filtering, and multi-stage training to separate useful behavior information from noise.
+
+## 4. Repository Structure
 
 ```text
-End4Rec/
-├── run.py                # 训练入口（CLI）
-├── train.py              # 主训练流程与配置加载
-├── trainer.py            # 4-stage 训练调度
-├── model.py              # END4Rec 模型主体
-├── ebm_enhanced.py       # EBM 相关实现
-├── block_mlp.py          # 模块层定义
-├── losses.py             # 推荐损失 + 对比损失 + 正则
-├── contrastive_loss.py   # 对比学习损失
-├── data.py / dataset.py  # 数据读取与构建
-└── evaluation.py         # HR / NDCG 评估
+.
+|-- End4Rec/
+|   |-- run.py                # CLI entry point
+|   |-- train.py              # Main training flow and config loading
+|   |-- trainer.py            # Four-stage training scheduler
+|   |-- model.py              # END4Rec model
+|   |-- ebm_enhanced.py       # EBM implementation
+|   |-- losses.py             # Recommendation, contrastive, and regularization losses
+|   |-- data.py / dataset.py  # Data loading and dataset construction
+|   `-- evaluation.py         # HR / NDCG evaluation
+|-- End4Rec.zip              # Original release archive
+`-- docs/                    # Project page and README assets
 ```
 
-## 3. 环境准备
+## 5. Installation
 
-建议环境：
+Recommended environment:
 
 - Python 3.9+
-- MindSpore（建议与本机 CUDA/Ascend 环境匹配）
+- MindSpore matched to your CUDA or Ascend environment
 
-快速检查：
+Quick check:
 
 ```bash
 cd End4Rec
 python -c "import mindspore; print(mindspore.__version__)"
 ```
 
-## 4. 数据格式
+## 6. Data / Models
 
-训练 CSV 需包含以下字段：
+Training CSV files should contain:
 
-- `item_ids`：逗号分隔的 item 序列
-- `behavior_ids`：逗号分隔的行为类型序列
-- `positions`：位置序列
-- `label`：目标 item
+- `item_ids`: comma-separated item sequence
+- `behavior_ids`: comma-separated behavior-type sequence
+- `positions`: position sequence
+- `label`: target item
 
-示例：
+Example:
 
 ```csv
 item_ids,behavior_ids,positions,label
-10,11,23,42
+"10,11,23","1,2,1","0,1,2",42
 ```
 
-> 注：实际训练中 `item_ids/behavior_ids/positions` 应为等长序列（如 `10,11,23,...`）。
+## 7. Quick Start
 
-## 5. 快速开始
-
-### 5.1 默认配置（快速跑通）
+Run the default configuration:
 
 ```bash
 cd End4Rec
 python run.py
 ```
 
-若未提供数据文件，代码会自动回退到 dummy 数据生成器以完成完整训练流程。
+If no data file is supplied, the code falls back to a dummy-data generator so the full training flow can be checked.
 
-### 5.2 使用自定义配置
+Run with a custom config:
 
 ```bash
 cd End4Rec
 python run.py --config config.json
 ```
 
-`config.json` 可覆盖的常用参数包括：
+## 8. Reproducing Results / Evaluation
 
-- 模型参数：`num_items`、`num_behaviors`、`seq_length`、`d_model`、`num_blocks`、`epsilon`
-- 训练参数：`batch_size`、`stage1~4_epochs`、`learning_rate_stage1~4`
-- 损失权重：`reg_weight`、`contrast_weight`
-- 数据参数：`train_data_file`、`eval_data_file`、`num_dummy_samples`
-- 评估参数：`topk`
-
-## 6. 训练流程（4 Stages）
-
-当前实现对应四阶段训练：
+The current implementation follows a four-stage training flow:
 
 1. `embedding + ebm`
 2. `hard_noise`
 3. `soft_noise`
-4. 全模块联合微调（含 `output_layer`）
+4. joint fine-tuning with `output_layer`
 
-## 7. 评估与产物
+When `eval_data_file` is provided, training reports `HR@K` and `NDCG@K`. The default final checkpoint path is `End4Rec/end4rec_final.ckpt`.
 
-- 若提供 `eval_data_file`，训练后会输出 `HR@K` 与 `NDCG@K`；
-- 默认在训练结束后保存模型为：`End4Rec/end4rec_final.ckpt`。
+## 9. Configuration Notes
 
-## 8. 引用
+Common config fields include `num_items`, `num_behaviors`, `seq_length`, `d_model`, `num_blocks`, `epsilon`, `batch_size`, `stage1~4_epochs`, `learning_rate_stage1~4`, `reg_weight`, `contrast_weight`, `train_data_file`, `eval_data_file`, `num_dummy_samples`, and `topk`.
 
-如果你的工作使用了本仓库，请引用原论文：
+## 10. Experimental Highlights
+
+The paper reports that END4Rec improves both efficiency and robustness for multi-behavior sequential recommendation by mining behavior patterns efficiently and decoupling different noise types.
+
+## 11. Notes For Maintainers
+
+- Keep the top-level README encoded as UTF-8.
+- Store future README/project-page figures under `docs/assets/`.
+- Add official slides, poster, or video links if WWW presentation materials become publicly available.
+
+<a id="citation"></a>
+
+## 12. Citation
 
 ```bibtex
-@inproceedings{han2024efficient,
-  title={Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation},
-  author={Han, Yongqiang and Wang, Hao and Wang, Kefan and Wu, Likang and Li, Zhi and Guo, Wei and Liu, Yong and Lian, Defu and Chen, Enhong},
-  booktitle={Proceedings of the ACM Web Conference 2024 (WWW '24)},
-  year={2024},
-  doi={10.1145/3589334.3645380}
+@inproceedings{han2024end4rec,
+  title = {END4Rec: Efficient Noise-Decoupling for Multi-Behavior Sequential Recommendation},
+  author = {Han, Yongqiang and Wang, Hao and Wang, Kefan and Wu, Likang and Li, Zhi and Guo, Wei and Liu, Yong and Lian, Defu and Chen, Enhong},
+  booktitle = {Proceedings of the ACM Web Conference 2024},
+  year = {2024},
+  doi = {10.1145/3589334.3645380},
+  url = {https://doi.org/10.1145/3589334.3645380}
 }
 ```
+
+## 13. Contact
+
+For paper questions, contact Hao Wang at `wanghao3@ustc.edu.cn` or Enhong Chen at `cheneh@ustc.edu.cn`. For repository issues, please open a GitHub issue in this repository.
